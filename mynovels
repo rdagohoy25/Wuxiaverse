@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Novels</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            background-color: #444;
+        }
+        nav a {
+            color: #fff;
+            padding: 14px 20px;
+            text-decoration: none;
+            text-align: center;
+        }
+        nav a:hover {
+            background-color: #555;
+        }
+        .container {
+            padding: 20px;
+        }
+        footer {
+            text-align: center;
+            padding: 10px 0;
+            background-color: #333;
+            color: #fff;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+        form {
+            margin: 20px 0;
+        }
+        form label {
+            display: block;
+            margin-bottom: 8px;
+        }
+        form input, form textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>My Novels</h1>
+    </header>
+    <nav>
+        <a href="#home">Home</a>
+        <a href="#library">Library</a>
+        <a href="#login">Login</a>
+        <a href="#history">History</a>
+        <a href="#addNovel">Add Novel</a>
+    </nav>
+    <div class="container" id="home">
+        <h2>Welcome to My Novels</h2>
+        <p>This is your personal space for managing and reading novels.</p>
+    </div>
+    <div class="container" id="library" style="display:none;">
+        <h2>Library</h2>
+        <p>Here is your collection of novels.</p>
+        <div id="novelList">
+            <!-- Novels will be listed here -->
+        </div>
+    </div>
+    <div class="container" id="login" style="display:none;">
+        <h2>Login</h2>
+        <form>
+            <label for="username">Username:</label><br>
+            <input type="text" id="username" name="username"><br>
+            <label for="password">Password:</label><br>
+            <input type="password" id="password" name="password"><br><br>
+            <input type="submit" value="Login">
+        </form>
+    </div>
+    <div class="container" id="history" style="display:none;">
+        <h2>History</h2>
+        <p>Your reading history will be displayed here.</p>
+    </div>
+    <div class="container" id="addNovel" style="display:none;">
+        <h2>Add a New Novel</h2>
+        <form id="novelForm">
+            <label for="novelTitle">Novel Title:</label>
+            <input type="text" id="novelTitle" name="novelTitle" required>
+            <label for="novelDescription">Description:</label>
+            <textarea id="novelDescription" name="novelDescription" rows="4" required></textarea>
+            <input type="submit" value="Add Novel">
+        </form>
+    </div>
+    <div class="container" id="addChapter" style="display:none;">
+        <h2>Add a New Chapter</h2>
+        <form id="chapterForm">
+            <label for="chapterTitle">Chapter Title:</label>
+            <input type="text" id="chapterTitle" name="chapterTitle" required>
+            <label for="chapterContent">Content:</label>
+            <textarea id="chapterContent" name="chapterContent" rows="10" required></textarea>
+            <input type="submit" value="Add Chapter">
+        </form>
+    </div>
+    <footer>
+        <p>&copy; 2024 My Novels. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const navLinks = document.querySelectorAll('nav a');
+        const containers = document.querySelectorAll('.container');
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                const targetId = this.getAttribute('href').substring(1);
+                containers.forEach(container => {
+                    container.style.display = 'none';
+                });
+                document.getElementById(targetId).style.display = 'block';
+            });
+        });
+
+        const novelForm = document.getElementById('novelForm');
+        const chapterForm = document.getElementById('chapterForm');
+        const novelList = document.getElementById('novelList');
+        let novels = [];
+
+        novelForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const title = document.getElementById('novelTitle').value;
+            const description = document.getElementById('novelDescription').value;
+            const newNovel = { title, description, chapters: [] };
+            novels.push(newNovel);
+            displayNovels();
+            novelForm.reset();
+        });
+
+        chapterForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const title = document.getElementById('chapterTitle').value;
+            const content = document.getElementById('chapterContent').value;
+            const novelIndex = chapterForm.getAttribute('data-novel-index');
+            novels[novelIndex].chapters.push({ title, content });
+            displayNovels();
+            chapterForm.reset();
+            document.getElementById('addChapter').style.display = 'none';
+            document.getElementById('library').style.display = 'block';
+        });
+
+        function displayNovels() {
+            novelList.innerHTML = '';
+            novels.forEach((novel, index) => {
+                const novelDiv = document.createElement('div');
+                novelDiv.innerHTML = `
+                    <h3>${novel.title}</h3>
+                    <p>${novel.description}</p>
+                    <button onclick="showAddChapter(${index})">Add Chapter</button>
+                    <div>
+                        ${novel.chapters.map(chapter => `<h4>${chapter.title}</h4><p>${chapter.content}</p>`).join('')}
+                    </div>
+                `;
+                novelList.appendChild(novelDiv);
+            });
+        }
+
+        function showAddChapter(novelIndex) {
+            document.getElementById('library').style.display = 'none';
+            document.getElementById('addChapter').style.display = 'block';
+            chapterForm.setAttribute('data-novel-index', novelIndex);
+        }
+    </script>
+</body>
+</html>
